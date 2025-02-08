@@ -1,0 +1,15 @@
+.loading__items {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 20px;
+}
+
+.loading__item {
+	width: 100%;
+	max-width: 300px;
+	height: 401px;
+	background: #f7f7f8;
+	border-radius: 15px;
+}
