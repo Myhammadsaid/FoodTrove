@@ -24,8 +24,7 @@
 📦 Установка и запуск
 
     Клонируйте репозиторий:
-
-git clone https://github.com/Myhammadsaid/FoodTrove.git
+    git clone https://github.com/Myhammadsaid/FoodTrove.git
 
 Перейдите в папку проекта:
 
