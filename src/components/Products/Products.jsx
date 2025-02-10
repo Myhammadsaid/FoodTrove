@@ -1,55 +1,52 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { BsCart2 } from 'react-icons/bs'
 import { IoIosHeartEmpty, IoMdHeart } from 'react-icons/io'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAddCart } from '../../hooks/useAddCart'
-import { useAuthUser } from '../../hooks/useAuthUser'
 import { useCategoryData } from '../../hooks/useCategoryData'
 import { useFetchData } from '../../hooks/useFetchData'
 import { useGetWishlist } from '../../hooks/useGetWishlist'
+import { AuthContext } from '../../providers/AuthProvider'
 import Loading from '../Loading/Loading'
 import './Products.css'
+
+const itemStar = rating => {
+	if (rating == 5) {
+		return <img src='/images/rating5.png' alt='rating-5' />
+	} else if (rating == 4) {
+		return <img src='/images/rating4.png' alt='rating-4' />
+	} else if (rating == 3) {
+		return <img src='/images/rating3.png' alt='rating-3' />
+	} else if (rating == 2) {
+		return <img src='/images/rating2.png' alt='rating-2' />
+	} else if (rating == 1) {
+		return <img src='/images/rating1.png' alt='rating-1' />
+	}
+}
 
 const Products = () => {
 	const navigate = useNavigate()
 	const [itemId, setItemId] = useState('')
 	const { categoryItems } = useCategoryData()
 	const [cartId, setCartId] = useState('')
-	const {
-		data,
-		loading,
-		error,
-		setLimitItem,
-		categoryValue,
-		setCategoryValue,
-	} = useFetchData()
+	const { ...actions } = useFetchData()
 	const { wishlistData } = useGetWishlist({ itemId })
-	const { userInfo } = useAuthUser()
+	const { userInfo } = useContext(AuthContext)
 	const {} = useAddCart({ userInfo, cartId })
 
 	useEffect(() => {
-		localStorage.setItem('category', categoryValue)
-	}, [categoryValue])
+		localStorage.setItem('category', actions.categoryValue)
+	}, [actions.categoryValue])
 
-	const filterCategory = categoryItems.map(item => (
-		<option key={item.slug} value={item.slug} className='header__option'>
-			{item.name}
-		</option>
-	))
-
-	const itemStar = rating => {
-		if (rating == 5) {
-			return <img src='/images/rating5.png' alt='rating-5' />
-		} else if (rating == 4) {
-			return <img src='/images/rating4.png' alt='rating-4' />
-		} else if (rating == 3) {
-			return <img src='/images/rating3.png' alt='rating-3' />
-		} else if (rating == 2) {
-			return <img src='/images/rating2.png' alt='rating-2' />
-		} else if (rating == 1) {
-			return <img src='/images/rating1.png' alt='rating-1' />
-		}
-	}
+	const filterCategory = useMemo(
+		() =>
+			categoryItems.map(item => (
+				<option key={item.slug} value={item.slug} className='header__option'>
+					{item.name}
+				</option>
+			)),
+		[categoryItems]
+	)
 
 	return (
 		<section className='products'>
@@ -57,8 +54,8 @@ const Products = () => {
 				<div className='products__top'>
 					<h1 className='products__title'>Popular Products</h1>
 					<select
-						value={categoryValue}
-						onChange={e => setCategoryValue(e.target.value)}
+						value={actions.categoryValue}
+						onChange={e => actions.setCategoryValue(e.target.value)}
 						className='header__select'
 					>
 						<option value='all' className='header__option'>
@@ -67,14 +64,14 @@ const Products = () => {
 						{filterCategory}
 					</select>
 				</div>
-				{error ? (
-					<h1 className='products__error'>{error}</h1>
-				) : loading ? (
+				{actions.error ? (
+					<h1 className='products__error'>{actions.error}</h1>
+				) : actions.loading ? (
 					<Loading />
 				) : (
 					<>
 						<div className='products__items'>
-							{data.map(item => (
+							{actions.data.map(item => (
 								<div key={item.id} className='products__item'>
 									<img
 										className='products__item__img'
@@ -122,12 +119,12 @@ const Products = () => {
 								</div>
 							))}
 						</div>
-						{categoryValue !== 'all' ? (
+						{actions.categoryValue !== 'all' ? (
 							<></>
 						) : (
 							<button
 								className='products__btn'
-								onClick={() => setLimitItem(prev => prev + 1)}
+								onClick={() => actions.setLimitItem(prev => prev + 1)}
 							>
 								Learn more
 							</button>

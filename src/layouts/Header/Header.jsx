@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { BsCart2 } from 'react-icons/bs'
 import { IoIosHeartEmpty } from 'react-icons/io'
 import { IoSearchOutline } from 'react-icons/io5'
@@ -18,25 +18,36 @@ const Header = () => {
 	const { categoryValue, setCategoryValue } = useFetchData()
 	const { userInfo, isLogin } = useAuthUser()
 
-	const filterCategory = categoryItems.map(item => (
-		<option
-			onClick={() => navigate(`/category/${item.slug}`)}
-			key={item.slug}
-			value={item.slug}
-			className='header__option'
-		>
-			{item.name}
-		</option>
-	))
+	const filterCategory = useMemo(
+		() =>
+			categoryItems.map(item => (
+				<option
+					onClick={() => navigate(`/category/${item.slug}`)}
+					key={item.slug}
+					value={item.slug}
+					className='header__option'
+				>
+					{item.name}
+				</option>
+			)),
+		[categoryItems]
+	)
 
-	const filterSearch = searchItems.map(item => (
-		<li key={item.id}>
-			<NavLink onClick={() => setItemTitle('')} to={`/single-route/${item.id}`}>
-				{item.title}
-			</NavLink>
-			<img src={item.thumbnail} alt={item.title} />
-		</li>
-	))
+	const filterSearch = useMemo(
+		() =>
+			searchItems.map(item => (
+				<li key={item.id}>
+					<NavLink
+						onClick={() => setItemTitle('')}
+						to={`/single-route/${item.id}`}
+					>
+						{item.title}
+					</NavLink>
+					<img src={item.thumbnail} alt={item.title} />
+				</li>
+			)),
+		[itemTitle]
+	)
 
 	return (
 		<header className='header'>
